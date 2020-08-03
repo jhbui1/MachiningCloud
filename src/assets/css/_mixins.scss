@@ -1,0 +1,23 @@
+@mixin small-screen-landscape {
+    @media (min-width: 576px) { @content; }
+}
+  
+@mixin medium-screen-landscape {
+    @media (min-width: 768px) { @content; }
+}
+
+@mixin large-screen-landscape {
+    @media (min-width: 992px) { @content; }
+}
+
+@mixin extra-large-screen-landscape {
+    @media (min-width: 1200px) { @content; }
+}
+
+@mixin high-res-screen-landscape {
+    @media (min-width: 1600px) and (min-height: 800px) { @content; }
+}
+
+@mixin ultra-high-res-screen-landscape {
+    @media (min-width: 2560px) and (min-height: 800px) { @content; }
+}

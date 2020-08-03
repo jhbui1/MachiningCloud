@@ -1,0 +1,11 @@
+@import '../../assets/css/mixins';
+
+#all-tools-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    @include small-screen-landscape {
+        flex-direction: row;
+    }    
+}
