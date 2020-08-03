@@ -26,8 +26,17 @@ export class AllToolsComponent implements OnInit {
   }
   
   ngOnInit(): void {
-    const toolCat = this.route.snapshot.paramMap.get('category');
+    const toolCat = this.lastSubRoute(this.router.url);
     this.filter(toolCat);
+  }
+  
+  /**
+   * returns last subroute
+   * @param route 
+   */
+  lastSubRoute(route:string):string {
+    const routeVals:string[] = route.split("/");
+    return routeVals[routeVals.length-1];
   }
 
   /**
@@ -44,7 +53,7 @@ export class AllToolsComponent implements OnInit {
   }
 
   /**
-   * appends categroy to route to pop as on back arrow navigation 
+   * appends categroy to route to pop on back arrow navigation 
    * and finds tools with given category
    * @param toolCategory 
    */
