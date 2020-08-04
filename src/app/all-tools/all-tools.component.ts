@@ -21,7 +21,7 @@ export class AllToolsComponent implements OnInit,OnDestroy {
     private toolsService: ToolsService
   ) { 
     this.routerListener = router.events.subscribe((event:NavigationEnd) => {
-      this.filterByLastSubRoute();
+      this.handleReverse();
     })
   }
   
@@ -70,7 +70,16 @@ export class AllToolsComponent implements OnInit,OnDestroy {
       this.filter(event.name);
       this.router.navigate([event.name.toLowerCase()],{relativeTo: this.route});
     } else {
-      this.router.navigate(['tools/module/'+event.name.toLowerCase()])
+      this.router.navigate(['tools/module/'+event.name])
+      this.parentTiles = [];
+    }
+  }
+
+  handleReverse() {
+    if(this.parentTiles.length == 0) {
+      this.filterByLastSubRoute();
+    } else {
+      this.tools$ = of(this.parentTiles.pop());
     }
   }
 

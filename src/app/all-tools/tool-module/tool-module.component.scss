@@ -1,0 +1,16 @@
+#module-content {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+a {
+    text-decoration: underline;
+    color: blue
+}
+
+a:hover {
+    cursor: pointer;
+}

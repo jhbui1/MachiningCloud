@@ -1,11 +1,13 @@
 <div id="all-tools-container">
-    <div  *ngFor="let tool of tools$ | async">
-        <app-tool-tile 
-            [tileName] = "tool.name"
-            [imgUrl]   = "tool.imgUrl"
-            [isModule] = "tool.isModule"
-            (filtered) = "onFilter($event)"
-        >
-        </app-tool-tile>
+    <div id="tools">
+        <div *ngFor="let tool of tools$ | async">
+            <app-tool-tile 
+                [tileName] = "tool.name"
+                [imgUrl]   = "tool.imgUrl"
+                [isModule] = "tool.isModule"
+                (filtered) = "onFilter($event)"
+            >
+            </app-tool-tile>
+        </div>
     </div>
 </div>
