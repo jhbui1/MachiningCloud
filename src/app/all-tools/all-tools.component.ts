@@ -60,6 +60,7 @@ export class AllToolsComponent implements OnInit,OnDestroy {
   }
 
   /**
+   * handles emissions from tile components
    * appends categroy to route to pop on back arrow navigation 
    * and finds tools with given category
    * @param toolCategory 
@@ -75,6 +76,10 @@ export class AllToolsComponent implements OnInit,OnDestroy {
     }
   }
 
+  /**
+   * checks if cache contains necessary tile info 
+   * otherwise filters by last category
+   */
   handleReverse() {
     if(this.parentTiles.length == 0) {
       this.filterByLastSubRoute();

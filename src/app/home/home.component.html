@@ -1,16 +1,8 @@
 <div id="home-content">
     <div id="home-filters">
-      <div class="tool-tile" (click)="navigateTo('milling')">
-        <p>Milling</p>
-        <img src="assets/images/milling.png">
-      </div>
-      <div class="tool-tile" (click)="navigateTo('turning')">
-        <p>Turning</p>
-        <img src="assets/images/turning.png">
-      </div>
-      <div class="tool-tile" (click)="navigateTo('hole-making')">
-        <p>Hole Making</p>
-        <img src="assets/images/hole-making.png">
+      <div class="tool-tile" *ngFor="let tile of tiles$ | async" (click)="navigateTo(tile.imgUrl)">
+        <p>{{tile.name}}</p>
+        <img src="{{'assets/images/' + tile.imgUrl + '.png'}}">
       </div>
     </div>
 </div>
