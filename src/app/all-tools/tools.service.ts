@@ -46,8 +46,8 @@ const tools: Tool[] = [
   new Tool({parent: "shoulder",name: "Contoured Shoulder",imgUrl: "shoulder-contoured-shoulder",isModule: true}),
   new Tool({parent: "slot",name: "Curve Slot",imgUrl: "slot-curve-slot",isModule: true}),
   new Tool({parent: "slot",name: "T-Slot",imgUrl: "slot-t-slot",isModule: true}),
-  new Tool({parent: "od planer face",name: "OD Planer Face From Solid",imgUrl: "od-planer-face-od-planer-face-from-solid",isModule: true}),
-  new Tool({parent: "od planer face",name: "OD Planer Face From Tube",imgUrl: "od-plane-face-od-planer-face-from-tube",isModule: true}),
+  new Tool({parent: "od-planer-face",name: "OD Planer Face From Solid",imgUrl: "od-planer-face-od-planer-face-from-solid",isModule: true}),
+  new Tool({parent: "od-planer-face",name: "OD Planer Face From Tube",imgUrl: "od-plane-face-od-planer-face-from-tube",isModule: true}),
 ]
 
 
@@ -61,7 +61,8 @@ export class ToolsService {
    * @param parent 
    */
   GetToolsWithParent(parent:string): Observable<Tool[]> {
-    const query = parent.toLowerCase();
+    const query = parent.split("%20").join("-").toLowerCase();
+    debugger;
     return of(tools.filter(x=>x.parent == query));
  
   }

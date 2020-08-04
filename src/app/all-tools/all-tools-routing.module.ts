@@ -2,12 +2,22 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { AllToolsComponent } from './all-tools.component';
+import { ToolModuleComponent } from './tool-module/tool-module.component';
 
 const routes: Routes = [
-  { path: '',
-    children: 
-    [{path:'**', component:AllToolsComponent}], 
-    component: AllToolsComponent,
+  {
+    path: 'module/:id',
+    component: ToolModuleComponent
+  },
+  { 
+    path: ':cat',
+    children:[
+      {
+        path:'**',
+        component: AllToolsComponent
+      }
+    ],
+    component: AllToolsComponent
   }
 ];
 

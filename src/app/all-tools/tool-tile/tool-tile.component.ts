@@ -8,7 +8,7 @@ import { EventEmitter } from '@angular/core';
 })
 export class ToolTileComponent implements OnInit {
 
-  @Output() filtered = new EventEmitter<string>();
+  @Output() filtered = new EventEmitter<{name: string,isModule: boolean}>();
 
   _imgUrl: string;
 
@@ -16,14 +16,16 @@ export class ToolTileComponent implements OnInit {
     this._imgUrl = value
   }  
   @Input() tileName: string;
+  @Input() isModule: boolean;
   
-  constructor() { }
+  constructor(
+  ) { }
 
   ngOnInit(): void {
   }
 
   filter() {
-    this.filtered.emit(this.tileName);
+    this.filtered.emit({name: this.tileName,isModule: this.isModule});
   }
 
 }

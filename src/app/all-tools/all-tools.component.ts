@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { ToolsService, Tool } from './tools.service';
 import { Observable, of } from 'rxjs';
 import { share,tap } from 'rxjs/operators';
@@ -9,29 +9,37 @@ import { share,tap } from 'rxjs/operators';
   templateUrl: './all-tools.component.html',
   styleUrls: ['./all-tools.component.scss']
 })
-export class AllToolsComponent implements OnInit {
+export class AllToolsComponent implements OnInit,OnDestroy {
   parentTiles: Tool[][] = []; //stores tiles for each level of filtering
   tools$:Observable<Tool[]>;
+  isModule: boolean = false;
+  routerListener: any;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private toolsService: ToolsService
   ) { 
-    router.events.subscribe((event:NavigationStart) => {
-      if(event.navigationTrigger ==='popstate') {
-        this.handleReverse();
-      }
+    this.routerListener = router.events.subscribe((event:NavigationEnd) => {
+      this.filterByLastSubRoute();
     })
   }
   
   ngOnInit(): void {
+    this.filterByLastSubRoute();
+  }
+
+  ngOnDestroy() {
+    this.routerListener.unsubscribe();
+  }
+  
+  filterByLastSubRoute() {
     const toolCat = this.lastSubRoute(this.router.url);
     this.filter(toolCat);
   }
-  
+
   /**
-   * returns last subroute
+   * returns last subroute in current url
    * @param route 
    */
   lastSubRoute(route:string):string {
@@ -45,7 +53,6 @@ export class AllToolsComponent implements OnInit {
    */
   filter(toolCategory:string) {
     const query = toolCategory.toLowerCase();
-    console.log(query)
     this.tools$ = this.toolsService.GetToolsWithParent(query).pipe(
       tap((tools) => this.parentTiles.push(tools)),
       share()
@@ -57,18 +64,14 @@ export class AllToolsComponent implements OnInit {
    * and finds tools with given category
    * @param toolCategory 
    */
-  onFilter(toolCategory:string) {
-    this.router.navigate([toolCategory.toLowerCase()],{relativeTo: this.route});
-    this.filter(toolCategory);
+  onFilter(event) {
+    this.isModule = event.isModule;
+    if(!this.isModule) {
+      this.filter(event.name);
+      this.router.navigate([event.name.toLowerCase()],{relativeTo: this.route});
+    } else {
+      this.router.navigate(['tools/module/'+event.name.toLowerCase()])
+    }
   }
 
-  /**
-   * Intercept back arrow, 
-   * load parent tiles if they exist
-   */
-  handleReverse() {
-    this.parentTiles.pop();
-    this.tools$ = of(this.parentTiles[this.parentTiles.length-1]);
-  }
- 
 }
