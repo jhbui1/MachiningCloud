@@ -66,11 +66,11 @@ export class ToolsService {
    * @param parent 
    */
   public GetToolsWithParent(parent:string | null): Observable<Tool[]> {
-    const query = parent===null ? null : decodeURIComponent(parent).split(" ").join("-").toLowerCase();
+    const query = this.toQueryString(parent);
     if(this.cache.has(query)) {
       return of(this.cache.get(query))
     } else {
-      return of(tools.filter(x=>x.parent === query)).pipe(
+      return of(tools.filter(tool=>tool.parent === query)).pipe(
         tap((tools) => {
           this.addToCache(tools,query)
         }), 
@@ -79,6 +79,14 @@ export class ToolsService {
     }
   }
  
+  /**
+   * 
+   * @param name 
+   */
+  public GetToolsWithName(name:string | null): Observable<Tool[]> {
+    return of(tools.filter(tool=>tool.name === decodeURIComponent(name)))
+  }
+
   /**
    * gets tools with no parent
    */
@@ -98,6 +106,10 @@ export class ToolsService {
     } 
     this.cacheSize += tools.length;
     this.cache.set(parent,tools);
+  }
+
+  private toQueryString(searchStr:string) {
+    return searchStr===null ? null : decodeURIComponent(searchStr).split(" ").join("-").toLowerCase();
   }
   constructor() { }
 }
