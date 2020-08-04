@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AllToolsComponent } from './all-tools.component';
 import { ToolModuleComponent } from './tool-module/tool-module.component';
+import { NotFoundComponent } from '../not-found/not-found.component';
 
 const routes: Routes = [
   {
@@ -10,14 +11,17 @@ const routes: Routes = [
     component: ToolModuleComponent
   },
   { 
-    path: ':cat',
+    path: 'search',
     children:[
       {
         path:'**',
         component: AllToolsComponent
       }
-    ],
-    component: AllToolsComponent
+    ]
+  },
+  {
+    path:"**", 
+    component: NotFoundComponent
   }
 ];
 

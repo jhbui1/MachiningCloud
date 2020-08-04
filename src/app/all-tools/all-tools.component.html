@@ -1,4 +1,10 @@
 <div id="all-tools-container">
+    <div id="filter-path">
+        <p style="font-weight: bold;" routerLink="/home">Filter Tools</p>
+        <div class="filter-label" *ngFor="let path of filterPath;" routerLink="{{path.path}}">
+            <p>{{path.name | titlecase}}</p>
+        </div>
+    </div>
     <div id="tools">
         <div *ngFor="let tool of tools$ | async">
             <app-tool-tile 

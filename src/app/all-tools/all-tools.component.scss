@@ -5,14 +5,30 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    @include small-screen-landscape {
-        flex-direction: row;
-    }    
+  
+}
+
+#filter-path {
+    display: flex;
+    flex-direction: row;
+    align-self: flex-start;
+    margin-left: 2em;
+
+    :hover {
+        cursor: pointer;
+    }
+
+    .filter-label {
+        margin-left: .5em;
+    }
 }
 
 #tools {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    @include small-screen-landscape {
+        flex-direction: row;
+    }    
     flex-wrap: wrap;
     max-width:  90vw;
 }

@@ -1,8 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { ToolsService, Tool } from './tools.service';
-import { Observable, of } from 'rxjs';
+import { ActivatedRoute, Router} from '@angular/router';
+import { ToolsService, Tool } from '../tools.service';
+import { Observable, Subscription } from 'rxjs';
 import { share,tap } from 'rxjs/operators';
+
+interface Breadcrumb {
+	name: string;
+	path: string;
+}
 
 @Component({
   selector: 'app-all-tools',
@@ -10,65 +15,46 @@ import { share,tap } from 'rxjs/operators';
   styleUrls: ['./all-tools.component.scss']
 })
 export class AllToolsComponent implements OnInit,OnDestroy {
-  parentTiles: Tool[][] = []; //stores tiles for each level of filtering
-  tools$:Observable<Tool[]>;
-  isModule: boolean = false;
-  routerListener: any;
+  public tools$        : Observable<Tool[]>;
+  public filterPath    : Breadcrumb[];
+
+  private allToolsRoot   : string = "/tools/search";
+  private parentTiles    : Tool[][] = [];             //stores tiles for each level of filtering
+  private urlSubscription: Subscription | null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private toolsService: ToolsService
   ) { 
-    this.routerListener = router.events.subscribe((event:NavigationEnd) => {
-      this.handleReverse();
+    this.urlSubscription = null;
+  }
+  
+  public ngOnInit(): void {
+ 
+    this.urlSubscription = this.route.url.subscribe( (urlSegments) => {
+      const segmentStrs = urlSegments.map(
+        (segment) => {
+          return decodeURIComponent(segment.path);
+        }
+      )
+      this.filterByLastSubRoute(segmentStrs);
     })
   }
-  
-  ngOnInit(): void {
-    this.filterByLastSubRoute();
-  }
 
-  ngOnDestroy() {
-    this.routerListener.unsubscribe();
+  public ngOnDestroy() {
+    this.urlSubscription.unsubscribe();
   }
   
-  filterByLastSubRoute() {
-    const toolCat = this.lastSubRoute(this.router.url);
-    this.filter(toolCat);
-  }
-
-  /**
-   * returns last subroute in current url
-   * @param route 
-   */
-  lastSubRoute(route:string):string {
-    const routeVals:string[] = route.split("/");
-    return routeVals[routeVals.length-1];
-  }
-
-  /**
-   * makes filter request to service
-   * @param toolCategory 
-   */
-  filter(toolCategory:string) {
-    const query = toolCategory.toLowerCase();
-    this.tools$ = this.toolsService.GetToolsWithParent(query).pipe(
-      tap((tools) => this.parentTiles.push(tools)),
-      share()
-    )
-  }
-
-  /**
+ /**
    * handles emissions from tile components
    * appends categroy to route to pop on back arrow navigation 
    * and finds tools with given category
+   * navigates to module component if when module is reached
    * @param toolCategory 
    */
-  onFilter(event) {
-    this.isModule = event.isModule;
-    if(!this.isModule) {
-      this.filter(event.name);
+  public onFilter(event: { isModule: boolean; name: string; }) {
+    if(!event.isModule) {
       this.router.navigate([event.name.toLowerCase()],{relativeTo: this.route});
     } else {
       this.router.navigate(['tools/module/'+event.name])
@@ -77,15 +63,50 @@ export class AllToolsComponent implements OnInit,OnDestroy {
   }
 
   /**
-   * checks if cache contains necessary tile info 
-   * otherwise filters by last category
+   * triggered by change in url 
+   * @param urlSegments decoded uri segments
    */
-  handleReverse() {
-    if(this.parentTiles.length == 0) {
-      this.filterByLastSubRoute();
-    } else {
-      this.tools$ = of(this.parentTiles.pop());
-    }
+  private filterByLastSubRoute(urlSegments:string[]=[]) {
+    this.getBreadCrumbs(urlSegments);
+    const toolCat = this.lastSubRoute(this.router.url);
+    this.filter(toolCat);
+  }
+
+  /**
+   * returns last subroute in current url
+   * @param route 
+   */
+  private lastSubRoute(route:string):string {
+    const routeVals:string[] = route.split("/");
+    return routeVals[routeVals.length-1];
+  }
+
+  /**
+   * makes filter request to service
+   * @param toolCategory 
+   */
+  private filter(toolCategory:string) {
+    const query = toolCategory.toLowerCase();
+    this.tools$ = this.toolsService.GetToolsWithParent(query).pipe(
+      tap((tools) => this.parentTiles.push(tools)),
+      share()
+    )
+  }
+ 
+  /**
+   * parse url to display in template 
+   * to jump multiple levels of filters
+   * @param urlSegments 
+   */
+  private getBreadCrumbs(urlSegments: string[]) {
+    var runningPath = this.allToolsRoot;
+    this.filterPath = urlSegments.map( (name) => {
+      runningPath += ("/" + encodeURIComponent(name));
+      return ({ 
+        name: "| "+name,
+        path: runningPath
+      })
+    })
   }
 
 }

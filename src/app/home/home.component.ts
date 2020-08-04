@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToolsService, Tool } from '../all-tools/tools.service';
+import { ToolsService, Tool } from '../tools.service';
 import { Observable } from 'rxjs';
 
 
@@ -18,12 +18,12 @@ export class HomeComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.tiles$ = this.toolService.GetBrandRoots();
   }
 
-  navigateTo(route:string)
+  public navigateTo(route:string)
   {
-    this.router.navigate(['tools/'+route]);
+    this.router.navigate(['tools/search/'+route]);
   }
 }
