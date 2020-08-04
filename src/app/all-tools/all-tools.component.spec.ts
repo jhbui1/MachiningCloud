@@ -1,58 +1,67 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, inject } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { AllToolsComponent } from './all-tools.component';
 import { Router } from '@angular/router';
+import { ToolsService, Tool } from '../tools.service';
+import { of } from 'rxjs';
 
 describe('AllToolsComponent', () => {
   let component: AllToolsComponent;
   let fixture: ComponentFixture<AllToolsComponent>;
-  let router: Router;
-  let spy: any;
+  let router: any;
+  let toolService: ToolsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AllToolsComponent ],
-      imports: [RouterTestingModule]
+      declarations: [ 
+        AllToolsComponent
+      ],
+      providers: [
+        ToolsService,
+      ],
+      imports: [ RouterTestingModule ]
     })
     .compileComponents();
     router = TestBed.get(Router)
   }));
 
-  beforeEach(() => {
+  beforeEach(inject([ToolsService], s => {
     fixture = TestBed.createComponent(AllToolsComponent);
     component = fixture.componentInstance;
-    spy = spyOn(component,'filterByLastSubRoute');
-    
+  
+    toolService = s
     fixture.detectChanges();
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
   
-  describe('#lastSubRoute()',() => {
-    it('should return string after last "/" in url', () => {
-      expect(component.lastSubRoute('http://localhost:4200/tools/milling')).toEqual('milling')
+  describe('#filterByLastSubRoute()', () => {
+    it('should return milling elements', () => {
+      const response: Tool[] =  [
+        new Tool({parent: "milling",name: "Pocket",imgUrl: "milling-pocket"}),
+        new Tool({parent: "milling",name: "Shoulder",imgUrl: ""}),
+        new Tool({parent: "milling",name: "Slot",imgUrl: "milling-slot"}),
+        new Tool({parent: "milling",name: "3D Profile Super class",imgUrl: "milling-3d-profile-super-class"})
+      ]
+      spyOn(toolService,'GetToolsWithParent').and.returnValue(of(response))
+      // @ts-ignore
+      component.filterByLastSubRoute(['milling']);
+      fixture.detectChanges();
+      expect(document.getElementById('tools').children.length).toEqual(response.length);
     })
-    it('should return string after last "/" in url', () => {
-      expect(component.lastSubRoute('http://localhost:4200/tools')).toEqual('tools')
+
+    it('should display home page for invalid filters', () => {
+      const response: Tool[] = [];
+      spyOn(toolService,'GetToolsWithParent').and.returnValue(of(response))
+      const routerSpy = spyOn(router,'navigate')
+      
+      // @ts-ignore
+      component.filterByLastSubRoute(['invalid-route']);
+      fixture.detectChanges();
+      expect(routerSpy).toHaveBeenCalledWith(['']);
     })
-  })
-
-  describe('#handleReverse()',() => {
-    it('should call filterByLastSubroute if cache is empty', () => {
-      router.navigate(['tools/milling/shoulder']);
-      expect(spy).toHaveBeenCalled();
-    })
-
-    // it('should pop cache layer if it exists') {
-
-    // }
-
-    // it('should have an empty cache after reaching a module', () => {
-
-    // })
-
   })
 });

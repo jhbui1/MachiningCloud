@@ -46,13 +46,13 @@ describe('ToolsService', () => {
   
   describe("#GetToolsWithParent()", () => {
     let response;
-    it('should should filter tools by parent name', ()=> {
+    it('should should filter tools by parent name', () => {
     
       const toolsObservable = service.GetToolsWithParent('milling').subscribe((resp)=>{
         expect(resp.length).toEqual(4);
       });
     })
-    it('should should filter tools by parent name', ()=> {
+    it('should should filter tools by parent name', () => {
       const toolsObservable = service.GetToolsWithParent('turning').subscribe((resp)=>{
         expect(resp.length).toEqual(3);
       });
