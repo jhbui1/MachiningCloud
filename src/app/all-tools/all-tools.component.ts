@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
 import { ToolsService, Tool } from '../tools.service';
 import { Observable, Subscription } from 'rxjs';
-import { share,tap } from 'rxjs/operators';
 
 interface Breadcrumb {
 	name: string;
@@ -19,7 +18,6 @@ export class AllToolsComponent implements OnInit,OnDestroy {
   public filterPath    : Breadcrumb[];
 
   private allToolsRoot   : string = "/tools/search";
-  private parentTiles    : Tool[][] = [];             //stores tiles for each level of filtering
   private urlSubscription: Subscription | null;
 
   constructor(
@@ -31,7 +29,6 @@ export class AllToolsComponent implements OnInit,OnDestroy {
   }
   
   public ngOnInit(): void {
- 
     this.urlSubscription = this.route.url.subscribe( (urlSegments) => {
       const segmentStrs = urlSegments.map(
         (segment) => {
@@ -58,7 +55,6 @@ export class AllToolsComponent implements OnInit,OnDestroy {
       this.router.navigate([event.name.toLowerCase()],{relativeTo: this.route});
     } else {
       this.router.navigate(['tools/module/'+event.name])
-      this.parentTiles = [];
     }
   }
 
@@ -68,17 +64,16 @@ export class AllToolsComponent implements OnInit,OnDestroy {
    */
   private filterByLastSubRoute(urlSegments:string[]=[]) {
     this.getBreadCrumbs(urlSegments);
-    const toolCat = this.lastSubRoute(this.router.url);
+    const toolCat = this.lastSubRoute(urlSegments);
     this.filter(toolCat);
   }
 
   /**
    * returns last subroute in current url
-   * @param route 
+   * @param urlSegments 
    */
-  private lastSubRoute(route:string):string {
-    const routeVals:string[] = route.split("/");
-    return routeVals[routeVals.length-1];
+  private lastSubRoute(urlSegments:string[]):string {
+    return urlSegments[urlSegments.length-1];
   }
 
   /**
@@ -87,10 +82,7 @@ export class AllToolsComponent implements OnInit,OnDestroy {
    */
   private filter(toolCategory:string) {
     const query = toolCategory.toLowerCase();
-    this.tools$ = this.toolsService.GetToolsWithParent(query).pipe(
-      tap((tools) => this.parentTiles.push(tools)),
-      share()
-    )
+    this.tools$ = this.toolsService.GetToolsWithParent(query);
   }
  
   /**

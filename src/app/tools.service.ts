@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { tap, share } from 'rxjs/operators';
 
 interface ITool {
   parent   : string,
@@ -27,7 +28,6 @@ export class Tool {
     this.name     = name;
     this.isModule = isModule;
   }
-
 }
 
 const tools: Tool[] = [
@@ -48,30 +48,56 @@ const tools: Tool[] = [
   new Tool({parent: "shoulder",name: "Straight Shoulder",imgUrl: "shoulder-straight-shoulder",isModule: true}),
   new Tool({parent: "shoulder",name: "Contoured Shoulder",imgUrl: "shoulder-contoured-shoulder",isModule: true}),
   new Tool({parent: "slot",name: "Curve Slot",imgUrl: "slot-curve-slot",isModule: true}),
-  new Tool({parent: "slot",name: "T-Slot",imgUrl: "slot-t-slot",isModule: false}),
+  new Tool({parent: "slot",name: "T-Slot",imgUrl: "slot-t-slot"}),
   new Tool({parent: "t-slot",name: "z-Slot",imgUrl: "slot-t-slot",isModule: true}),
   new Tool({parent: "od-planer-face",name: "OD Planer Face From Solid",imgUrl: "od-planer-face-od-planer-face-from-solid",isModule: true}),
   new Tool({parent: "od-planer-face",name: "OD Planer Face From Tube",imgUrl: "od-planer-face-od-planer-face-from-tube",isModule: true}),
 ]
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class ToolsService {
+  private cache: Map<string | null,Tool[]> = new Map<string,Tool[]>(); //used to short circuit mocked api requests represented by tools.filter()
+  private cacheSize: number = 0; //amount of tools in cache among all keys
 
   /**
    * Returns all tools with given parent
    * @param parent 
    */
-  GetToolsWithParent(parent:string): Observable<Tool[]> {
-    const query = parent.split("%20").join("-").toLowerCase();
-    return of(tools.filter(x=>x.parent == query));
+  public GetToolsWithParent(parent:string | null): Observable<Tool[]> {
+    const query = parent===null ? null : decodeURIComponent(parent).split(" ").join("-").toLowerCase();
+    if(this.cache.has(query)) {
+      return of(this.cache.get(query))
+    } else {
+      return of(tools.filter(x=>x.parent === query)).pipe(
+        tap((tools) => {
+          this.addToCache(tools,query)
+        }), 
+        share()
+      );
+    }
+  }
  
+  /**
+   * gets tools with no parent
+   */
+  public GetBrandRoots() {
+    return this.GetToolsWithParent(null);
   }
 
-  GetBrandRoots() {
-    return of(tools.filter(tool=>tool.parent==null));
+   /**
+   * 
+   * @param tools response to be cached
+   * @param parent key to search cached result by
+   */
+  private addToCache(tools: Tool[],parent: string) {
+    if(this.cacheSize + tools.length > 1000) {
+      this.cache.clear();
+      this.cacheSize = 0;
+    } 
+    this.cacheSize += tools.length;
+    this.cache.set(parent,tools);
   }
   constructor() { }
 }
