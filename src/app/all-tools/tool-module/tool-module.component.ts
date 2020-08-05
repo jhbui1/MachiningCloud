@@ -60,7 +60,7 @@ export class ToolModuleComponent implements OnInit, OnDestroy {
         return toolsWithModuleNameAsName.pipe(
           tap(matchingNamedTools => {
             if(matchingNamedTools.length != 1 || matchingParentTools.length != 0) {
-              this.router.navigate(['not-found'])
+              this.home();
             }
           }),
           share()
