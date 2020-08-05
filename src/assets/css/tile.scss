@@ -5,6 +5,13 @@
     padding: 1em;
     background: linear-gradient(#eaeaea 0,#fff 50%);
     margin: 1em;
+
+    p {
+        max-width: 7em;
+        @include small-screen-landscape { 
+            max-width: 12em;
+        }
+    }
 }
 
 .tool-tile:hover {

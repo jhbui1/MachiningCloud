@@ -30,6 +30,9 @@ export class Tool {
   }
 }
 
+/**
+ * mock data
+ */
 const tools: Tool[] = [
   new Tool({parent: null,name:"Milling",imgUrl:"milling"}),
   new Tool({parent: null,name:"Turning",imgUrl:"turning"}),
@@ -37,7 +40,7 @@ const tools: Tool[] = [
   new Tool({parent: "milling",name: "Pocket",imgUrl: "milling-pocket"}),
   new Tool({parent: "milling",name: "Shoulder",imgUrl: ""}),
   new Tool({parent: "milling",name: "Slot",imgUrl: "milling-slot"}),
-  new Tool({parent: "milling",name: "3D Profile Super class",imgUrl: "milling-3d-profile-super-class"}),
+  new Tool({parent: "milling",name: "3D Profile Super class",imgUrl: "milling-3d-profile-super-class",isModule: true}),
   new Tool({parent: "turning",name: "OD Planer Face",imgUrl: "turning-od-planner-face"}),
   new Tool({parent: "turning",name: "OD Cylinder",imgUrl: "turning-od-cylinder",isModule: true}),
   new Tool({parent: "turning",name: "OD Profile",imgUrl: "turning-od-profile",isModule: true}),
@@ -48,8 +51,7 @@ const tools: Tool[] = [
   new Tool({parent: "shoulder",name: "Straight Shoulder",imgUrl: "shoulder-straight-shoulder",isModule: true}),
   new Tool({parent: "shoulder",name: "Contoured Shoulder",imgUrl: "shoulder-contoured-shoulder",isModule: true}),
   new Tool({parent: "slot",name: "Curve Slot",imgUrl: "slot-curve-slot",isModule: true}),
-  new Tool({parent: "slot",name: "T-Slot",imgUrl: "slot-t-slot"}),
-  new Tool({parent: "t-slot",name: "z-Slot",imgUrl: "slot-t-slot",isModule: true}),
+  new Tool({parent: "slot",name: "T-Slot",imgUrl: "slot-t-slot",isModule: true}),
   new Tool({parent: "od-planer-face",name: "OD Planer Face From Solid",imgUrl: "od-planer-face-od-planer-face-from-solid",isModule: true}),
   new Tool({parent: "od-planer-face",name: "OD Planer Face From Tube",imgUrl: "od-planer-face-od-planer-face-from-tube",isModule: true}),
 ]
